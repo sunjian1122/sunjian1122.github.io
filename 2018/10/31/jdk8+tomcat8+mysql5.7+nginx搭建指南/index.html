@@ -5,9 +5,11 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Elasticsearch入门一：Elasticsearch的基本概念（译）, 个人博客-孙建">
-    <meta name="description" content="一.Elasticsearch定义Elasticsearch是一个开源的高度可扩展的全文搜索和分析引擎。它允许您快速、实时的存储、搜索和分析大数据。它通常为具有复杂的搜索特性和需求的应用提供底层引擎或技术。
-Elasticsearch可以用">
+    <meta name="keywords" content="jdk8+tomcat8+mysql5.7+nginx搭建指南, 个人博客-孙建">
+    <meta name="description" content="搭建过程中遇到一些问题，因此记录下来方便以后查看！
+问题记录：
+1.由于粗心没有查看Linux是32位还是64位，导致下载了错误版本的软件，从而遇到很多不兼容的问题，耽误了不少时间，以下是查看Linux位数的命令：
+getconf LONG">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -15,7 +17,7 @@ Elasticsearch可以用">
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Elasticsearch入门一：Elasticsearch的基本概念（译） | 个人博客-孙建</title>
+    <title>jdk8+tomcat8+mysql5.7+nginx搭建指南 | 个人博客-孙建</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -249,13 +251,13 @@ Elasticsearch可以用">
 
 
 
-<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/14.jpg')">
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/5.jpg')">
     <div class="container">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        Elasticsearch入门一：Elasticsearch的基本概念（译）
+                        jdk8+tomcat8+mysql5.7+nginx搭建指南
                     </div>
                 </div>
             </div>
@@ -275,8 +277,8 @@ Elasticsearch可以用">
             
             <div class="article-tag">
                 
-                <a href="/tags/Elasticsearch/" target="_blank">
-                    <span class="chip bg-color">Elasticsearch</span>
+                <a href="/tags/linux服务器/" target="_blank">
+                    <span class="chip bg-color">linux服务器</span>
                 </a>
                 
             </div>
@@ -285,52 +287,93 @@ Elasticsearch可以用">
                 
 
                 <span class="post-date">
-                    <i class="fa fa-clock-o fa-fw"></i>2018-10-19
+                    <i class="fa fa-clock-o fa-fw"></i>2018-10-31
                 </span>
             </div>
         </div>
         <hr>
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="一-Elasticsearch定义"><a href="#一-Elasticsearch定义" class="headerlink" title="一.Elasticsearch定义"></a>一.Elasticsearch定义</h2><p>Elasticsearch是一个开源的高度可扩展的全文搜索和分析引擎。它允许您快速、实时的存储、搜索和分析大数据。它通常为具有复杂的搜索特性和需求的应用提供底层引擎或技术。</p>
-<p>Elasticsearch可以用于以下的一些场景：</p>
-<ul>
-<li>运营一个网上商城，客户需要在商城中搜索你销售的产品。在这种情况下，你可以使用Elasticsearch去保存你的产品目录和产品，为它们提供搜索和建议。</li>
-<li>收集日志或事务数据，并且希望分析和挖掘这些数据，以查找趋势、统计数据、汇总或异常。在这种情况下，你可以使用Logstash去收集、聚合和转换你的数据，然后通过Logstash将数据导入Elasticsearch。一旦将数据导入Elasticsearch，你可以运行搜索和聚合来挖掘你感兴趣的任何信息。</li>
-<li>您运行一个价格提醒平台，它允许价格敏感的客户指定规则，比如：我对某个电子产品感兴趣，如果它在一个月内价格低于某个价位，就给我提醒。在这种情况下，您可以提取供应商的价格，将其推入Elasticsearch，并使用其反向搜索(Percolator)功能，根据客户查询匹配价格变动，最终在找到匹配后将消息推送给客户。</li>
-<li>您有分析/业务智能需求，并且希望快速调查、分析、可视化，并针对大量数据(想想数以百万计或数十亿计的记录)提出专门的问题。在这种情况下，你可以使用Elasticsearch来存储你的数据，然后使用Kibana来构建自定义仪器表，用来对重要的数据进行可视化。另外，你可以使用Elasticsearch的聚合功能对数据进行复杂的业务智能查询。</li>
+                <p>搭建过程中遇到一些问题，因此记录下来方便以后查看！</p>
+<p>问题记录：</p>
+<p>1.由于粗心没有查看Linux是32位还是64位，导致下载了错误版本的软件，从而遇到很多不兼容的问题，耽误了不少时间，以下是查看Linux位数的命令：</p>
+<pre><code>getconf LONG_BIT
+</code></pre><p>2.安装mysql5.7时参考的是mysql5.6的安装教程，结果两个版本之间的安装有些变化，5.6执行的安装脚本是<code>./scripts/mysql_install_db --user=mysql</code>，而5.7执行的是<code>bin/mysqld --initialize --user=mysql</code>，也就是5.7已经将mysql_install_db废弃了。</p>
+<p>3.执行<code>bin/mysqld --initialize --user=mysql</code>命令时，报如下错误</p>
+<blockquote>
+<p>bin/mysqld: error while loading shared libraries: libnuma.so.1: </p>
+</blockquote>
+<p>由于我的系统是CentOS，执行<code>yum -y install numactl</code>即可，ubuntu的采用<code>sudo apt-get install numactl</code>就可以解决这个问题。</p>
+<h2 id="一-软件版本"><a href="#一-软件版本" class="headerlink" title="一.软件版本"></a>一.软件版本</h2><ul>
+<li><p>CentOS release 6.8</p>
+</li>
+<li><p>jdk-8u191-linux-i586.tar.gz </p>
+</li>
+<li><p>apache-tomcat-8.5.34.tar.gz</p>
+</li>
+<li><p>mysql-5.7.24-linux-glibc2.12-i686.tar.gz</p>
+</li>
+<li><p>nginx-1.9.9.tar.gz</p>
+</li>
 </ul>
-<h2 id="二-Elasticsearch基本概念"><a href="#二-Elasticsearch基本概念" class="headerlink" title="二.Elasticsearch基本概念"></a>二.Elasticsearch基本概念</h2><p>以下是Elasticsearch的核心，一开始就理解好这些概念将很好的简化学习过程。</p>
-<p><strong>实时（Near Realtime）</strong></p>
-<p>Elasticsearch 是一个实时的搜索平台。这意味着从索引文档到文档变成可索引的过程仅仅是稍微的延迟（通常一秒钟）。</p>
-<p><strong>集群（Cluster）</strong></p>
-<p>集群是一个或多个节点（服务器）的集合，这些节点保存整个数据并且提供跨所有节点的联合索引和搜索功能。一个集群有唯一的名称，默认为elasticsearch。如果节点被设置为通过其名称加入集群的话，这个名称就很重要，因为节点只能是集群的一部分。</p>
-<p>确保不要在不同的环境中重用相同的集群名称，否则可能会导致节点加入错误的集群。例如，您可以使用logging-dev、logging-stage和logging-prod分别对应开发、测试和生产集群名称。</p>
-<p>如果一个集群中只有一个节点，也是有效和合理的。此外，您还可以拥有多个独立的集群，每个集群都有自己独特的集群名称。</p>
-<p><strong>节点（Node）</strong></p>
-<p>节点是单个服务器，它是集群的一部分，用于存储数据，并参与集群的索引和搜索功能。与集群一样，节点的名称默认为在启动时分配给节点的随机唯一标识符(UUID)。如果你不想要默认的名称，你可以定义为你想要的任意名称。当你想要知道网络中的哪个服务对应于Elasticsearch群中的哪个节点时，就用该名称来区分。</p>
-<p>通过配置群名称，节点可以加入特定的集群。默认情况下，每个节点都被设置为加入一个名为elasticsearch的集群。</p>
-<p>在一个单独的集群中，你可以配置任意数量的节点。此外，如果当前网络上没有任何节点在运行，默认情况下，启动单个节点将形成一个名为elasticsearch的新单节点集群。</p>
-<p><strong>索引（Index）</strong></p>
-<p>索引是具有类似特性的文档集合。例如，你可以有一个客户数据的索引，一个产品目录的索引和一个订单数据的索引。索引的名称必须是小写的，此名称用于在对文档执行索引、搜索、更新和删除操作时引用索引。在单个集群中，你可以设置任意数量的索引。</p>
-<p><strong>类型（Type）</strong></p>
-<p>注：在6.0.0的版本中已经废弃掉了。</p>
-<p>类型过去是索引的逻辑类别或分区，允许您在同一索引中存储不同类型的文档。比如一个类型用于保存用户，另一个类型用于保存博客帖子。此类型以后不再使用。</p>
-<p><strong>文档（Document）</strong></p>
-<p>文档是可以建立索引的基本信息单元。例如，可以为单个客户提供一个文档，为单个产品提供一个文档，为单个订单提供另一个文档。文档用JSON的形式表示，它是互联网中最普遍的数据交换格式。在索引中，可以有任意数量的文档。请注意，尽管文档在物理上驻留在索引中，但实际上文档必须被索引分配到索引中的类型中。</p>
-<p><strong>碎片和副本（Shards &amp; Replicas）</strong></p>
-<p>索引可能存储大量数据，从而超出单个节点的硬件限制。例如，一个包含10亿个文档的索引占用了1TB的磁盘空间，它可能不适合于单个节点的磁盘，或者单个节点提供搜索请求时效率太慢。</p>
-<p>为了解决这个问题，Elasticsearch提供了将索引细分为多个碎片的功能。当您创建索引时，您可以简单地定义您想要的碎片的数量。每个碎片本身都是一个功能齐全、独立的“索引”，可以驻留在集群中的任何节点上。</p>
-<p>切分存在的两大重要原因：</p>
-<p>允许水平切分或缩放内容<br>允许在碎片(可能在多个节点上)之间分发和并行化操作，从而提高性能/吞吐量<br>碎片如何分布以及如何将其文档聚合回搜索请求的机制完全由Elasticsearch管理，对用户来说是透明的。</p>
-<p>在任何时候都可能出现故障的网络/云环境中，有一个故障转移机制是非常有用的，强烈建议在碎片/节点脱机或因任何原因消失的情况下使用该机制。</p>
-<p>为此，Elasticsearch允许您将索引碎片的一个或多个副本复制到所谓的复制碎片中，或简称为副本。</p>
-<p>复制存在的两大重要原因：</p>
-<p>它提供了在碎片/节点失败时的高可用性。出于这个原因，需要注意的是，复制碎片从来不与复制它的原始/主碎片在同一个节点上分配<br>可以扩展搜索量/吞吐量，因为搜索可以在所有副本上并行执行<br>总而言之，每个索引可以分成多个碎片。一个索引也可以被复制零次或多次。一旦复制，每个索引将具有主碎片(从原始碎片复制而来的)和复制碎片(主碎片的副本)。</p>
-<p>在创建索引时，每个索引可以定义碎片和副本的数量。创建索引之后，还可以随时动态更改副本的数量。您可以使用_shrink和_split api更改现有索引的碎片数量，但是这不是一项简单的任务，预先计划正确的碎片数量是最佳方法。</p>
-<p>默认情况下，Elasticsearch中的每个索引分配5个主碎片和1个副本，这意味着如果集群中至少有两个节点，那么索引将有5个主碎片和5个副本碎片(1个完整副本)，每个索引总共有10个碎片。</p>
-<p>原文地址：</p>
-<pre><code>[https://www.elastic.co/guide/en/elasticsearch/reference/5.4/getting-started.html](https://www.elastic.co/guide/en/elasticsearch/reference/5.4/getting-started.html)​​​​​​​
+<h2 id="二-环境搭建"><a href="#二-环境搭建" class="headerlink" title="二.环境搭建"></a>二.环境搭建</h2><h3 id="1-jdk8安装"><a href="#1-jdk8安装" class="headerlink" title="1.jdk8安装"></a>1.jdk8安装</h3><p>参考本人博客：<br><a href="https://sunjian1122.github.io/2018/10/26/Elasticsearch%E5%85%A5%E9%97%A8%E4%BA%8C%EF%BC%9AElasticsearch.5.4.3+kibana5.4.3+word%E5%88%86%E8%AF%8D%E9%9B%86%E7%BE%A4linux%E6%90%AD%E5%BB%BA/" target="_blank" rel="noopener">https://sunjian1122.github.io/2018/10/26/Elasticsearch%E5%85%A5%E9%97%A8%E4%BA%8C%EF%BC%9AElasticsearch.5.4.3+kibana5.4.3+word%E5%88%86%E8%AF%8D%E9%9B%86%E7%BE%A4linux%E6%90%AD%E5%BB%BA/</a></p>
+<h3 id="2-mysql-5-7安装"><a href="#2-mysql-5-7安装" class="headerlink" title="2.mysql-5.7安装"></a>2.mysql-5.7安装</h3><p>参考以下博客：<br><a href="https://www.cnblogs.com/dengshihuang/p/8029092.html" target="_blank" rel="noopener">https://www.cnblogs.com/dengshihuang/p/8029092.html</a></p>
+<h3 id="3-nginx的安装"><a href="#3-nginx的安装" class="headerlink" title="3.nginx的安装"></a>3.nginx的安装</h3><p>nginx的作用主要是<strong>反向代理和负载均衡</strong></p>
+<p>以下为安装命令：</p>
+<pre><code>#我的所有安装都存放在/data/software/目录下
+ cd /data/software/
+
+#获取nginx安装包
+wget http://nginx.org/download/nginx-1.9.9.tar.gz
+
+#解压
+tar -zxvf nginx-1.9.9.tar.gz
+
+#移动至安装目录
+mv /data/software/nginx-1.9.9 /usr/local/nginx
+
+#安装所需的依赖包
+yum -y install gcc zlib zlib-devel pcre-devel openssl openssl-devel
+
+#进入linux安装目录
+cd /usr/local/nginx
+
+#执行命令
+./configure
+
+#执行make命令
+make
+
+#执行make install命令
+make install
+
+#接下来就可以启动nginx服务了,
+sbin/nginx
+
+#重启命令
+sbin/nginx -s reload
+
+#停止命令
+sbin/nginx -s stop 或 sbin/nginx -s quit
+</code></pre><p>如果执行命令<code>sbin/nginx</code>启动服务时报如下错误：</p>
+<blockquote>
+<p>nginx: [alert] could not open error log file: open() “/usr/local/nginx/logs/error.log” failed (2: No such file or directory)<br>2018/10/31 05:56:01 [emerg] 7074#0: open() “/usr/local/nginx/logs/access.log” failed (2: No such file or directory)</p>
+</blockquote>
+<p>是由于不存在/usr/local/nginx/logs目录，新建logs目录即可</p>
+<p>如果要通过nginx映射为自己的网址，需要打开conf/nginx.conf文件，修改里面的location配置</p>
+<pre><code>#默认配置
+#location / {
+#    root   html;
+#    index  index.html index.htm;
+#}
+
+#新增配置，映射为自己的网址
+location / {
+      proxy_pass http://www.lovebooklist.com;
+}
+</code></pre><p>接下来就可以访问自己的网址啦<a href="http://www.lovebooklist.com" title="爱小说" target="_blank" rel="noopener">http://www.lovebooklist.com</a></p>
+<p>参考链接：</p>
+<pre><code>[https://www.cnblogs.com/jimisun/p/8057156.html](https://www.cnblogs.com/jimisun/p/8057156.html)
 </code></pre>
             </div>
             <hr/>
@@ -469,7 +512,7 @@ Elasticsearch可以用">
                     <span class="reprint-tip">转载请注明: </span>
                     <a href="http://www.b618.club" class="b-link-green">个人博客-孙建</a>
                     <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
-                    <a href="/2018/10/19/Elasticsearch入门一：Elasticsearch的基本概念/" class="b-link-green">Elasticsearch入门一：Elasticsearch的基本概念（译）</a>
+                    <a href="/2018/10/31/jdk8+tomcat8+mysql5.7+nginx搭建指南/" class="b-link-green">jdk8+tomcat8+mysql5.7+nginx搭建指南</a>
                 </p>
             </div>
         </div>
@@ -488,8 +531,51 @@ Elasticsearch可以用">
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">本篇</div>
+            <div class="card">
+                <a href="/2018/10/31/jdk8+tomcat8+mysql5.7+nginx搭建指南/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="jdk8+tomcat8+mysql5.7+nginx搭建指南">
+                        
+                        <span class="card-title">jdk8+tomcat8+mysql5.7+nginx搭建指南</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">搭建过程中遇到一些问题，因此记录下来方便以后查看！
+问题记录：
+1.由于粗心没有查看Linux是32位还是64位，导致下载了错误版本的软件，从而遇到很多不兼容的问题，耽误了不少时间，以下是查看Linux位数的命令：
+getconf LONG</div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2018-10-31
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-user fa-fw"></i>
+                            Jack Sun
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/linux服务器/" target="_blank">
+                        <span class="chip bg-color">linux服务器</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
         <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge left-badge text-color">上一篇</div>
+            <div class="article-badge right-badge text-color">下一篇</div>
             <div class="card">
                 <a href="/2018/10/26/Elasticsearch入门二：Elasticsearch.5.4.3+kibana5.4.3+word分词集群linux搭建/">
                     <div class="card-image">
@@ -513,48 +599,8 @@ word-master.zip
 
 二.</div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="fa fa-clock-o fa-fw icon-date"></i>2018-10-26
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fa fa-user fa-fw"></i>
-                            Jack Sun
-                            
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/Elasticsearch/" target="_blank">
-                        <span class="chip bg-color">Elasticsearch</span>
-                    </a>
-                    
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">本篇</div>
-            <div class="card">
-                <a href="/2018/10/19/Elasticsearch入门一：Elasticsearch的基本概念/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="Elasticsearch入门一：Elasticsearch的基本概念（译）">
-                        
-                        <span class="card-title">Elasticsearch入门一：Elasticsearch的基本概念（译）</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary">一.Elasticsearch定义Elasticsearch是一个开源的高度可扩展的全文搜索和分析引擎。它允许您快速、实时的存储、搜索和分析大数据。它通常为具有复杂的搜索特性和需求的应用提供底层引擎或技术。
-Elasticsearch可以用</div>
-                    <div class="publish-info">
                             <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2018-10-19
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2018-10-26
                             </span>
                         <span class="publish-author">
                             
@@ -564,7 +610,6 @@ Elasticsearch可以用</div>
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
