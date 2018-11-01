@@ -5,11 +5,10 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="jdk8+tomcat8+mysql5.7+nginx搭建指南, 个人博客-孙建">
-    <meta name="description" content="搭建过程中遇到一些问题，因此记录下来方便以后查看！
-问题记录：
-1.由于粗心没有查看Linux是32位还是64位，导致下载了错误版本的软件，从而遇到很多不兼容的问题，耽误了不少时间，以下是查看Linux位数的命令：
-getconf LONG">
+    <meta name="keywords" content="Elasticsearch入门三：Elasticsearch基本用法-增删改查（译）, 个人博客-孙建">
+    <meta name="description" content="原文地址：
+https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_cluster.html
+之前我们已经将集群运行起来了，下一步是学习">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -17,7 +16,7 @@ getconf LONG">
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>jdk8+tomcat8+mysql5.7+nginx搭建指南 | 个人博客-孙建</title>
+    <title>Elasticsearch入门三：Elasticsearch基本用法-增删改查（译） | 个人博客-孙建</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -251,13 +250,13 @@ getconf LONG">
 
 
 
-<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/5.jpg')">
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/16.jpg')">
     <div class="container">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        jdk8+tomcat8+mysql5.7+nginx搭建指南
+                        Elasticsearch入门三：Elasticsearch基本用法-增删改查（译）
                     </div>
                 </div>
             </div>
@@ -277,8 +276,8 @@ getconf LONG">
             
             <div class="article-tag">
                 
-                <a href="/tags/linux服务器/" target="_blank">
-                    <span class="chip bg-color">linux服务器</span>
+                <a href="/tags/Elasticsearch/" target="_blank">
+                    <span class="chip bg-color">Elasticsearch</span>
                 </a>
                 
             </div>
@@ -287,93 +286,120 @@ getconf LONG">
                 
 
                 <span class="post-date">
-                    <i class="fa fa-clock-o fa-fw"></i>2018-10-31
+                    <i class="fa fa-clock-o fa-fw"></i>2018-11-01
                 </span>
             </div>
         </div>
         <hr>
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>搭建过程中遇到一些问题，因此记录下来方便以后查看！</p>
-<p>问题记录：</p>
-<p>1.由于粗心没有查看Linux是32位还是64位，导致下载了错误版本的软件，从而遇到很多不兼容的问题，耽误了不少时间，以下是查看Linux位数的命令：</p>
-<pre><code>getconf LONG_BIT
-</code></pre><p>2.安装mysql5.7时参考的是mysql5.6的安装教程，结果两个版本之间的安装有些变化，5.6执行的安装脚本是<code>./scripts/mysql_install_db --user=mysql</code>，而5.7执行的是<code>bin/mysqld --initialize --user=mysql</code>，也就是5.7已经将mysql_install_db废弃了。</p>
-<p>3.执行<code>bin/mysqld --initialize --user=mysql</code>命令时，报如下错误</p>
-<blockquote>
-<p>bin/mysqld: error while loading shared libraries: libnuma.so.1: </p>
-</blockquote>
-<p>由于我的系统是CentOS，执行<code>yum -y install numactl</code>即可，ubuntu的采用<code>sudo apt-get install numactl</code>就可以解决这个问题。</p>
-<h2 id="一-软件版本"><a href="#一-软件版本" class="headerlink" title="一.软件版本"></a>一.软件版本</h2><ul>
-<li><p>CentOS release 6.8</p>
+                <p>原文地址：</p>
+<p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_cluster.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_cluster.html</a></p>
+<p>之前我们已经将集群运行起来了，下一步是学习怎么与它们沟通。而Elasticsearch正好提供了一个非常全面和强大的REST API文档，用来与集群交互。API实现的几个功能点如下：</p>
+<ul>
+<li><p>检查您的集群、节点和索引健康状况、状态和统计信息</p>
 </li>
-<li><p>jdk-8u191-linux-i586.tar.gz </p>
+<li><p>管理集群、节点、索引数据和元数据</p>
 </li>
-<li><p>apache-tomcat-8.5.34.tar.gz</p>
+<li><p>索引的增删改查及搜索操作</p>
 </li>
-<li><p>mysql-5.7.24-linux-glibc2.12-i686.tar.gz</p>
-</li>
-<li><p>nginx-1.9.9.tar.gz</p>
+<li><p>高级的搜索功能，比如分页、排序、过滤、脚本编制、聚合等等</p>
 </li>
 </ul>
-<h2 id="二-环境搭建"><a href="#二-环境搭建" class="headerlink" title="二.环境搭建"></a>二.环境搭建</h2><h3 id="1-jdk8安装"><a href="#1-jdk8安装" class="headerlink" title="1.jdk8安装"></a>1.jdk8安装</h3><p>参考本人博客：<br><a href="https://sunjian1122.github.io/2018/10/26/Elasticsearch%E5%85%A5%E9%97%A8%E4%BA%8C%EF%BC%9AElasticsearch.5.4.3+kibana5.4.3+word%E5%88%86%E8%AF%8D%E9%9B%86%E7%BE%A4linux%E6%90%AD%E5%BB%BA/" target="_blank" rel="noopener">https://sunjian1122.github.io/2018/10/26/Elasticsearch%E5%85%A5%E9%97%A8%E4%BA%8C%EF%BC%9AElasticsearch.5.4.3+kibana5.4.3+word%E5%88%86%E8%AF%8D%E9%9B%86%E7%BE%A4linux%E6%90%AD%E5%BB%BA/</a></p>
-<h3 id="2-mysql-5-7安装"><a href="#2-mysql-5-7安装" class="headerlink" title="2.mysql-5.7安装"></a>2.mysql-5.7安装</h3><p>参考以下博客：<br><a href="https://www.cnblogs.com/dengshihuang/p/8029092.html" target="_blank" rel="noopener">https://www.cnblogs.com/dengshihuang/p/8029092.html</a></p>
-<h3 id="3-nginx的安装"><a href="#3-nginx的安装" class="headerlink" title="3.nginx的安装"></a>3.nginx的安装</h3><p>nginx的作用主要是<strong>反向代理和负载均衡</strong></p>
-<p>以下为安装命令：</p>
-<pre><code>#我的所有安装都存放在/data/software/目录下
- cd /data/software/
+<h3 id="一-检查集群的健康状况"><a href="#一-检查集群的健康状况" class="headerlink" title="一.检查集群的健康状况"></a>一.检查集群的健康状况</h3><h4 id="1-查看集群健康"><a href="#1-查看集群健康" class="headerlink" title="1.查看集群健康"></a>1.查看集群健康</h4><p>为了检查集群的健康状况,我们使用<code>_cat</code> API。</p>
+<pre><code>GET /_cat/health?v
+</code></pre><p>响应如下：</p>
+<pre><code>epoch      timestamp cluster status node.total node.data shards pri relo init unassign pending_tasks max_task_wait_time active_shards_percent
 
-#获取nginx安装包
-wget http://nginx.org/download/nginx-1.9.9.tar.gz
+1541039656 10:34:16  search  yellow          3         1      6   6    0    0      6             0                  -                 50.0%
+</code></pre><p>主要关注如下几个参数：</p>
+<pre><code>cluster：集群名称，默认名称为elasticsearch，由于elasticsearch默认使用单播网络发现，在同一个机器上的其他节点只要集群名称相同，就当做同一个集群。
 
-#解压
-tar -zxvf nginx-1.9.9.tar.gz
+status：健康状况，分为下面三种状态：
 
-#移动至安装目录
-mv /data/software/nginx-1.9.9 /usr/local/nginx
+        green - 一切都很好（集群功能齐全）
 
-#安装所需的依赖包
-yum -y install gcc zlib zlib-devel pcre-devel openssl openssl-devel
+        yellow - 所有数据都可用，但有些副本尚未分配（集群功能齐全）
 
-#进入linux安装目录
-cd /usr/local/nginx
+        red - 有些数据由于某些问题不可用（集群只有部分功能）注意：当集群是红色时，它将继续为可用碎片的搜索请求提供服务，但是您可能需要尽快修复它，因为存在未分配的碎片
+</code></pre><h4 id="2-查看节点"><a href="#2-查看节点" class="headerlink" title="2.查看节点"></a>2.查看节点</h4><p>使用以下命令查看集群的节点列表：</p>
+<pre><code>GET /_cat/nodes?v
+</code></pre><p>响应如下：</p>
+<pre><code>ip           heap.percent ram.percent cpu load_1m load_5m load_15m node.role master name
+192.168.2.36           99          94  11    0.77    0.41     0.35 mdi       *      node-1
+192.168.2.36           24          94  11    0.77    0.41     0.35 mi        -      node-2
+192.168.2.36           23          94  11    0.77    0.41     0.35 mi        -      node-3
+</code></pre><h4 id="3-查看索引"><a href="#3-查看索引" class="headerlink" title="3.查看索引"></a>3.查看索引</h4><pre><code>GET /_cat/indices?v
+</code></pre><p>响应如下：</p>
+<pre><code>health status index        uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+yellow open   .kibana      nujGq_auS-u2KZRbS7LoUw   1   1          2            0     10.8kb         10.8kb
+yellow open   event_search lG2RcdO-Q6Wtd5oup-2CCQ   5   1   16107987            0     11.4gb         11.4gb
+</code></pre><p>主要参数的意思：</p>
+<pre><code> health：健康状况，分别为green、yellow和red
 
-#执行命令
-./configure
+index：索引名
 
-#执行make命令
-make
+uuid：唯一标识
 
-#执行make install命令
-make install
+pri：主碎片
 
-#接下来就可以启动nginx服务了,
-sbin/nginx
+rep：副本
+</code></pre><h3 id="二-索引的增删改查"><a href="#二-索引的增删改查" class="headerlink" title="二.索引的增删改查"></a>二.索引的增删改查</h3><h4 id="1-创建索引"><a href="#1-创建索引" class="headerlink" title="1.创建索引"></a>1.创建索引</h4><p>现在，我们创建一个名为“customer”的索引，然后再次列出所有索引:</p>
+<pre><code>#使用PUT创建名为“customer”的索引，pretty表示格式化显示json结果
+PUT /customer?pretty
 
-#重启命令
-sbin/nginx -s reload
-
-#停止命令
-sbin/nginx -s stop 或 sbin/nginx -s quit
-</code></pre><p>如果执行命令<code>sbin/nginx</code>启动服务时报如下错误：</p>
-<blockquote>
-<p>nginx: [alert] could not open error log file: open() “/usr/local/nginx/logs/error.log” failed (2: No such file or directory)<br>2018/10/31 05:56:01 [emerg] 7074#0: open() “/usr/local/nginx/logs/access.log” failed (2: No such file or directory)</p>
-</blockquote>
-<p>是由于不存在/usr/local/nginx/logs目录，新建logs目录即可</p>
-<p>如果要通过nginx映射为自己的网址，需要打开conf/nginx.conf文件，修改里面的location配置</p>
-<pre><code>#默认配置
-#location / {
-#    root   html;
-#    index  index.html index.htm;
-#}
-
-#新增配置，映射为自己的网址
-location / {
-      proxy_pass http://www.lovebooklist.com;
+GET /_cat/indices?v
+</code></pre><h4 id="2-新增或更新文档"><a href="#2-新增或更新文档" class="headerlink" title="2.新增或更新文档"></a>2.新增或更新文档</h4><h5 id="2-1-指定ID新增或替换文档"><a href="#2-1-指定ID新增或替换文档" class="headerlink" title="2.1.指定ID新增或替换文档"></a>2.1.指定ID新增或替换文档</h5><p>现在我们在customer索引中添加一些内容。我们将把一个简单的文档索引到customer索引中，ID为1，如下所示：</p>
+<pre><code>PUT /customer/doc/1?pretty
+{
+      &quot;name&quot;: &quot;John Doe&quot;
 }
-</code></pre><p>接下来就可以访问自己的网址啦<a href="http://www.lovebooklist.com" title="爱小说" target="_blank" rel="noopener">http://www.lovebooklist.com</a></p>
-<p>参考链接：</p>
-<pre><code>[https://www.cnblogs.com/jimisun/p/8057156.html](https://www.cnblogs.com/jimisun/p/8057156.html)
+</code></pre><p>响应如下：</p>
+<pre><code>{
+    &quot;_index&quot;: &quot;customer&quot;,
+    &quot;_type&quot;: &quot;doc&quot;,
+    &quot;_id&quot;: &quot;1&quot;,
+    &quot;_version&quot;: 1,
+    &quot;result&quot;: &quot;created&quot;,
+    -&quot;_shards&quot;: {
+        &quot;total&quot;: 2,
+        &quot;successful&quot;: 1,
+        &quot;failed&quot;: 0
+    },
+    &quot;created&quot;: true
+}
+</code></pre><p>从上面可以看到，在customer索引中成功创建了一个新的id为1的customer文档。</p>
+<p>需要注意的是，Elasticsearch并没有强制要求我们在创建文档时创建索引，创建文档时若对应的索引不存在，将自动创建该索引。</p>
+<p><strong>若ID存在则替换原来的文档，不存在则新增</strong></p>
+<h5 id="2-2-自生成ID新增文档"><a href="#2-2-自生成ID新增文档" class="headerlink" title="2.2.自生成ID新增文档"></a>2.2.自生成ID新增文档</h5><p>这个例子展示了如何在没有显式ID的情况下对文档进行索引，只是用POST代替了PUT调用方式:</p>
+<pre><code>POST /customer/_doc?pretty
+{
+      &quot;name&quot;: &quot;Jane Doe&quot;
+}
+</code></pre><h5 id="2-3-更新文档"><a href="#2-3-更新文档" class="headerlink" title="2.3.更新文档"></a>2.3.更新文档</h5><p>除了能够索引和替换文档之外，我们还可以更新文档。不过请注意，Elasticsearch实际上并不会在引擎盖下进行就地更新。每当我们执行更新时，Elasticsearch就会删除旧文档，然后新增新文档。</p>
+<p>这个例子展示了如何通过将name字段更改为“Jane Doe”来更新我们以前的文档(ID为1)：</p>
+<pre><code>POST /customer/_doc/1/_update?pretty
+{
+      &quot;doc&quot;: { &quot;name&quot;: &quot;Jane Doe&quot; }
+}
+</code></pre><h4 id="3-搜索文档"><a href="#3-搜索文档" class="headerlink" title="3.搜索文档"></a>3.搜索文档</h4><p>接下来可以搜索刚才创建的文档：</p>
+<pre><code>GET /customer/doc/1?pretty
+</code></pre><p>响应如下：</p>
+<pre><code>{
+    &quot;_index&quot;: &quot;customer&quot;,
+    &quot;_type&quot;: &quot;doc&quot;,
+    &quot;_id&quot;: &quot;1&quot;,
+    &quot;_version&quot;: 1,
+    &quot;found&quot;: true,
+    -&quot;_source&quot;: {
+        &quot;name&quot;: &quot;John Doe&quot;
+    }
+}
+</code></pre><p><code>&quot;found&quot;: true</code>表示找到了对应的文档，文档的具体内容见<code>_source</code>里面的内容。</p>
+<h4 id="4-删除索引与文档"><a href="#4-删除索引与文档" class="headerlink" title="4.删除索引与文档"></a>4.删除索引与文档</h4><h5 id="4-1-删除索引"><a href="#4-1-删除索引" class="headerlink" title="4.1.删除索引"></a>4.1.删除索引</h5><p>将创建的索引删除：</p>
+<pre><code>DELETE /customer?pretty
+</code></pre><h5 id="4-2-删除文档"><a href="#4-2-删除文档" class="headerlink" title="4.2.删除文档"></a>4.2.删除文档</h5><p>删除文档相当简单。这个例子展示了如何删除customer索引下对应ID为2的文档:</p>
+<pre><code>DELETE /customer/_doc/2?pretty
 </code></pre>
             </div>
             <hr/>
@@ -512,7 +538,7 @@ location / {
                     <span class="reprint-tip">转载请注明: </span>
                     <a href="http://www.b618.club" class="b-link-green">个人博客-孙建</a>
                     <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
-                    <a href="/2018/10/31/jdk8+tomcat8+mysql5.7+nginx搭建指南/" class="b-link-green">jdk8+tomcat8+mysql5.7+nginx搭建指南</a>
+                    <a href="/2018/11/01/Elasticsearch入门三：Elasticsearch基本用法-增删改查/" class="b-link-green">Elasticsearch入门三：Elasticsearch基本用法-增删改查（译）</a>
                 </p>
             </div>
         </div>
@@ -531,8 +557,8 @@ location / {
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge left-badge text-color">上一篇</div>
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">本篇</div>
             <div class="card">
                 <a href="/2018/11/01/Elasticsearch入门三：Elasticsearch基本用法-增删改查/">
                     <div class="card-image">
@@ -548,9 +574,9 @@ location / {
 https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_cluster.html
 之前我们已经将集群运行起来了，下一步是学习</div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="fa fa-clock-o fa-fw icon-date"></i>2018-11-01
-                        </span>
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2018-11-01
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fa fa-user fa-fw"></i>
@@ -559,6 +585,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -575,30 +602,23 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_
         <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge right-badge text-color">下一篇</div>
             <div class="card">
-                <a href="/2018/10/26/Elasticsearch入门二：Elasticsearch.5.4.3+kibana5.4.3+word分词集群linux搭建/">
+                <a href="/2018/10/31/jdk8+tomcat8+mysql5.7+nginx搭建指南/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="Elasticsearch入门二：Elasticsearch.5.4.3+kibana5.4.3+word分词集群linux搭建">
+                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="jdk8+tomcat8+mysql5.7+nginx搭建指南">
                         
-                        <span class="card-title">Elasticsearch入门二：Elasticsearch.5.4.3+kibana5.4.3+word分词集群linux搭建</span>
+                        <span class="card-title">jdk8+tomcat8+mysql5.7+nginx搭建指南</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">一.软件版本
-jdk-8u191-linux-x64.tar.gz 
-
-elasticsearch-5.4.3.tar.gz 
-
-kibana-5.4.3-linux-x86_64.tar.gz 
-
-word-master.zip
-
-
-二.</div>
+                    <div class="summary">搭建过程中遇到一些问题，因此记录下来方便以后查看！
+问题记录：
+1.由于粗心没有查看Linux是32位还是64位，导致下载了错误版本的软件，从而遇到很多不兼容的问题，耽误了不少时间，以下是查看Linux位数的命令：
+getconf LONG</div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2018-10-26
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2018-10-31
                             </span>
                         <span class="publish-author">
                             
@@ -611,8 +631,8 @@ word-master.zip
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Elasticsearch/" target="_blank">
-                        <span class="chip bg-color">Elasticsearch</span>
+                    <a href="/tags/linux服务器/" target="_blank">
+                        <span class="chip bg-color">linux服务器</span>
                     </a>
                     
                 </div>
