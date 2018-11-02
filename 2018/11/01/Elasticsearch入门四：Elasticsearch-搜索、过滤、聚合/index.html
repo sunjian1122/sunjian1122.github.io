@@ -5,10 +5,10 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Elasticsearch入门三：Elasticsearch基本用法-增删改查（译）, 个人博客-孙建">
+    <meta name="keywords" content="Elasticsearch入门四：Elasticsearch-搜索、过滤、聚合(译), 个人博客-孙建">
     <meta name="description" content="原文地址：
-https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_cluster.html
-之前我们已经将集群运行起来了，下一步是学习">
+https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_data.html
+一.搜索 API搜索的REST API可以从_s">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -16,7 +16,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Elasticsearch入门三：Elasticsearch基本用法-增删改查（译） | 个人博客-孙建</title>
+    <title>Elasticsearch入门四：Elasticsearch-搜索、过滤、聚合(译) | 个人博客-孙建</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -250,13 +250,13 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_
 
 
 
-<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/16.jpg')">
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/10.jpg')">
     <div class="container">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        Elasticsearch入门三：Elasticsearch基本用法-增删改查（译）
+                        Elasticsearch入门四：Elasticsearch-搜索、过滤、聚合(译)
                     </div>
                 </div>
             </div>
@@ -294,147 +294,328 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <p>原文地址：</p>
-<p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_cluster.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_cluster.html</a></p>
-<p>之前我们已经将集群运行起来了，下一步是学习怎么与它们沟通。而Elasticsearch正好提供了一个非常全面和强大的REST API文档，用来与集群交互。API实现的几个功能点如下：</p>
+<p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_data.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_data.html</a></p>
+<h3 id="一-搜索-API"><a href="#一-搜索-API" class="headerlink" title="一.搜索 API"></a>一.搜索 API</h3><p>搜索的REST API可以从_search端点访问。这个示例返回customer索引中的所有文档：</p>
+<pre><code>GET /event_search/_search?q=*&amp;sort=id:asc&amp;pretty
+</code></pre><p>几个搜索参数的意思：</p>
 <ul>
-<li><p>检查您的集群、节点和索引健康状况、状态和统计信息</p>
+<li>q=* ：匹配索引中的所有文档</li>
+</ul>
+<ul>
+<li>sort=id:asc ： 所有文档按照id升序排序</li>
+</ul>
+<ul>
+<li>pretty ： 格式化JSON输出</li>
+</ul>
+<p>响应如下：</p>
+<pre><code>{
+      &quot;took&quot; : 207,
+     &quot;timed_out&quot; : false,
+      &quot;_shards&quot; : {
+        &quot;total&quot; : 5,
+        &quot;successful&quot; : 5,
+        &quot;failed&quot; : 0
+      },
+
+      &quot;hits&quot; : {
+        &quot;total&quot; : 16107987,
+        &quot;max_score&quot; : null,
+        &quot;hits&quot; : [
+          {
+            &quot;_index&quot; : &quot;event_search&quot;,
+            &quot;_type&quot; : &quot;app_sjyx_event&quot;,
+            &quot;_id&quot; : &quot;00000092-bda7-48de-80ef-1cee534aa5e7&quot;,
+            &quot;_score&quot; : null,
+               &quot;_source&quot; : {
+                  &quot;id&quot; : &quot;00000092-bda7-48de-80ef-1cee534aa5e7&quot;,
+                  &quot;event&quot; : &quot;wxid_winbzgzpq7fg12:我今天把超梦种族一弄&quot;
+            },
+            &quot;sort&quot; : [
+                  &quot;00000092-bda7-48de-80ef-1cee534aa5e7&quot;
+            ]
+          },
+        {
+            &quot;_index&quot; : &quot;event_search&quot;,
+            &quot;_type&quot; : &quot;app_sjyx_event&quot;,
+            &quot;_id&quot; : &quot;00000111-9a7c-483e-80fb-3313a4c9a8ce&quot;,
+            &quot;_score&quot; : null,
+            &quot;_source&quot; : {
+                  &quot;id&quot; : &quot;00000111-9a7c-483e-80fb-3313a4c9a8ce&quot;,
+                  &quot;event&quot; : &quot;通话时长 03:38&quot;
+            },
+            &quot;sort&quot; : [
+                  &quot;00000111-9a7c-483e-80fb-3313a4c9a8ce&quot;
+                ]
+          }
+     ]
+ }
+}
+</code></pre><p>关于响应，我们看到以下部分:</p>
+<ul>
+<li><p>took – 搜索时间（毫秒）</p>
 </li>
-<li><p>管理集群、节点、索引数据和元数据</p>
+<li><p>timed_out  – 搜索是否超时</p>
 </li>
-<li><p>索引的增删改查及搜索操作</p>
+<li><p>_shards – 告诉我们搜索了多少碎片，以及成功/失败搜索碎片的计数</p>
 </li>
-<li><p>高级的搜索功能，比如分页、排序、过滤、脚本编制、聚合等等</p>
+<li><p>hits – 搜索结果</p>
+</li>
+<li><p>hits.total – 符合我们搜寻条件的文件总数</p>
+</li>
+<li><p>hits.hits – 实际的搜索结果数组(默认为前10个文档)</p>
+</li>
+<li><p>hits.sort 结果的排序键(如果按分数排序，则会丢失)</p>
 </li>
 </ul>
-<h3 id="一-检查集群的健康状况"><a href="#一-检查集群的健康状况" class="headerlink" title="一.检查集群的健康状况"></a>一.检查集群的健康状况</h3><h4 id="1-查看集群健康"><a href="#1-查看集群健康" class="headerlink" title="1.查看集群健康"></a>1.查看集群健康</h4><p>为了检查集群的健康状况,我们使用<code>_cat</code> API。</p>
-<pre><code>GET /_cat/health?v
-</code></pre><p>响应如下：</p>
-<pre><code>epoch      timestamp cluster status node.total node.data shards pri relo init unassign pending_tasks max_task_wait_time active_shards_percent
-
-1541039656 10:34:16  search  yellow          3         1      6   6    0    0      6             0                  -                 50.0%
-</code></pre><p>主要关注如下几个参数：</p>
-<pre><code>cluster：集群名称，默认名称为elasticsearch，由于elasticsearch默认使用单播网络发现，在同一个机器上的其他节点只要集群名称相同，就当做同一个集群。
-
-status：健康状况，分为下面三种状态：
-
-        green - 一切都很好（集群功能齐全）
-
-        yellow - 所有数据都可用，但有些副本尚未分配（集群功能齐全）
-
-        red - 有些数据由于某些问题不可用（集群只有部分功能）注意：当集群是红色时，它将继续为可用碎片的搜索请求提供服务，但是您可能需要尽快修复它，因为存在未分配的碎片
-</code></pre><h4 id="2-查看节点"><a href="#2-查看节点" class="headerlink" title="2.查看节点"></a>2.查看节点</h4><p>使用以下命令查看集群的节点列表：</p>
-<pre><code>GET /_cat/nodes?v
-</code></pre><p>响应如下：</p>
-<pre><code>ip           heap.percent ram.percent cpu load_1m load_5m load_15m node.role master name
-192.168.2.36           99          94  11    0.77    0.41     0.35 mdi       *      node-1
-192.168.2.36           24          94  11    0.77    0.41     0.35 mi        -      node-2
-192.168.2.36           23          94  11    0.77    0.41     0.35 mi        -      node-3
-</code></pre><h4 id="3-查看索引"><a href="#3-查看索引" class="headerlink" title="3.查看索引"></a>3.查看索引</h4><pre><code>GET /_cat/indices?v
-</code></pre><p>响应如下：</p>
-<pre><code>health status index        uuid                   pri rep docs.count docs.deleted store.size pri.store.size
-yellow open   .kibana      nujGq_auS-u2KZRbS7LoUw   1   1          2            0     10.8kb         10.8kb
-yellow open   event_search lG2RcdO-Q6Wtd5oup-2CCQ   5   1   16107987            0     11.4gb         11.4gb
-</code></pre><p>主要参数的意思：</p>
-<pre><code> health：健康状况，分别为green、yellow和red
-
-index：索引名
-
-uuid：唯一标识
-
-pri：主碎片
-
-rep：副本
-</code></pre><h3 id="二-索引的增删改查"><a href="#二-索引的增删改查" class="headerlink" title="二.索引的增删改查"></a>二.索引的增删改查</h3><h4 id="1-创建索引"><a href="#1-创建索引" class="headerlink" title="1.创建索引"></a>1.创建索引</h4><p>现在，我们创建一个名为“customer”的索引，然后再次列出所有索引:</p>
-<pre><code>#使用PUT创建名为“customer”的索引，pretty表示格式化显示json结果
-PUT /customer?pretty
-
-GET /_cat/indices?v
-</code></pre><h4 id="2-新增或更新文档"><a href="#2-新增或更新文档" class="headerlink" title="2.新增或更新文档"></a>2.新增或更新文档</h4><h5 id="2-1-指定ID新增或替换文档"><a href="#2-1-指定ID新增或替换文档" class="headerlink" title="2.1.指定ID新增或替换文档"></a>2.1.指定ID新增或替换文档</h5><p>现在我们在customer索引中添加一些内容。我们将把一个简单的文档索引到customer索引中，ID为1，如下所示：</p>
-<pre><code>PUT /customer/doc/1?pretty
+<p>使用以下的方法可以达到相同的搜索结果：</p>
+<pre><code>POST /event_search/_search
 {
-      &quot;name&quot;: &quot;John Doe&quot;
+      &quot;query&quot;: { &quot;match_all&quot;: {} },
+      &quot;sort&quot;: [
+        { &quot;id&quot;: &quot;asc&quot; }
+      ]
 }
-</code></pre><p>响应如下：</p>
-<pre><code>{
-    &quot;_index&quot;: &quot;customer&quot;,
-    &quot;_type&quot;: &quot;doc&quot;,
-    &quot;_id&quot;: &quot;1&quot;,
-    &quot;_version&quot;: 1,
-    &quot;result&quot;: &quot;created&quot;,
-    -&quot;_shards&quot;: {
-        &quot;total&quot;: 2,
-        &quot;successful&quot;: 1,
-        &quot;failed&quot;: 0
-    },
-    &quot;created&quot;: true
-}
-</code></pre><p>从上面可以看到，在customer索引中成功创建了一个新的id为1的customer文档。</p>
-<p>需要注意的是，Elasticsearch并没有强制要求我们在创建文档时创建索引，创建文档时若对应的索引不存在，将自动创建该索引。</p>
-<p><strong>若ID存在则替换原来的文档，不存在则新增</strong></p>
-<h5 id="2-2-自生成ID新增文档"><a href="#2-2-自生成ID新增文档" class="headerlink" title="2.2.自生成ID新增文档"></a>2.2.自生成ID新增文档</h5><p>这个例子展示了如何在没有显式ID的情况下对文档进行索引，只是用POST代替了PUT调用方式:</p>
-<pre><code>POST /customer/_doc?pretty
+</code></pre><p>很重要的一点是，<strong>一旦返回搜索结果，Elasticsearch就完全完成了对请求的处理</strong>，不会在结果中维护任何类型的服务器端资源或打开游标，这不同于SQL。</p>
+<h3 id="二-查询-DSL"><a href="#二-查询-DSL" class="headerlink" title="二.查询 DSL"></a>二.查询 DSL</h3><p>查询DSL是json风格的域特定查询语句，查询语句非常全面，我们先从几个基本的例子入手。</p>
+<h4 id="1-按id升序查询10到19的文档"><a href="#1-按id升序查询10到19的文档" class="headerlink" title="1.按id升序查询10到19的文档"></a>1.按id升序查询10到19的文档</h4><pre><code>POST /event_search/_search
 {
-      &quot;name&quot;: &quot;Jane Doe&quot;
+      &quot;query&quot;: { &quot;match_all&quot;: {} },
+      &quot;sort&quot;: [
+        { &quot;id&quot;: &quot;asc&quot; }
+      ],
+    &quot;from&quot;: 10,
+      &quot;size&quot;: 10
 }
-</code></pre><h5 id="2-3-更新文档"><a href="#2-3-更新文档" class="headerlink" title="2.3.更新文档"></a>2.3.更新文档</h5><p>除了能够索引和替换文档之外，我们还可以更新文档。不过请注意，Elasticsearch实际上并不会在引擎盖下进行就地更新。每当我们执行更新时，Elasticsearch就会删除旧文档，然后新增新文档。</p>
-<p>这个例子展示了如何通过将name字段更改为“Jane Doe”来更新我们以前的文档(ID为1)：</p>
-<pre><code>POST /customer/_doc/1/_update?pretty
+</code></pre><p>搜索参数含义：</p>
+<ul>
+<li><p>“query”：查询参数，match_all 指搜索所有的索引</p>
+</li>
+<li><p>“sort”：排序规则</p>
+</li>
+<li><p>“from”：指定从哪个文档索引开始，默认为0</p>
+</li>
+<li><p>“size”：指定从from参数开始返回多少文档</p>
+</li>
+</ul>
+<h4 id="2-查询event字段中包含喜欢或推销的文档，文档只返回id，event两个字段"><a href="#2-查询event字段中包含喜欢或推销的文档，文档只返回id，event两个字段" class="headerlink" title="2.查询event字段中包含喜欢或推销的文档，文档只返回id，event两个字段"></a>2.查询event字段中包含喜欢或推销的文档，文档只返回id，event两个字段</h4><pre><code>POST /event_search/_search
 {
-      &quot;doc&quot;: { &quot;name&quot;: &quot;Jane Doe&quot; }
+      &quot;query&quot;: { &quot;match&quot;: { &quot;event&quot;: &quot;喜欢 推销&quot; } },
+      &quot;_source&quot;: [&quot;id&quot;, &quot;event&quot;]
 }
-</code></pre><h4 id="3-搜索文档"><a href="#3-搜索文档" class="headerlink" title="3.搜索文档"></a>3.搜索文档</h4><p>接下来可以搜索刚才创建的文档：</p>
-<pre><code>GET /customer/doc/1?pretty
-</code></pre><p>响应如下：</p>
-<pre><code>{
-    &quot;_index&quot;: &quot;customer&quot;,
-    &quot;_type&quot;: &quot;doc&quot;,
-    &quot;_id&quot;: &quot;1&quot;,
-    &quot;_version&quot;: 1,
-    &quot;found&quot;: true,
-    -&quot;_source&quot;: {
-        &quot;name&quot;: &quot;John Doe&quot;
-    }
+</code></pre><ul>
+<li>“_source”：指定返回的字段</li>
+</ul>
+<h4 id="3-查询event字段中包含喜欢且包含推销的文档"><a href="#3-查询event字段中包含喜欢且包含推销的文档" class="headerlink" title="3.查询event字段中包含喜欢且包含推销的文档"></a>3.查询event字段中包含喜欢且包含推销的文档</h4><pre><code>POST /event_search/_search
+{
+      &quot;query&quot;: { &quot;match_phrase&quot;: { &quot;event&quot;: &quot;喜欢 推销&quot; } }
 }
-</code></pre><p><code>&quot;found&quot;: true</code>表示找到了对应的文档，文档的具体内容见<code>_source</code>里面的内容。</p>
-<h4 id="4-删除索引与文档"><a href="#4-删除索引与文档" class="headerlink" title="4.删除索引与文档"></a>4.删除索引与文档</h4><h5 id="4-1-删除索引"><a href="#4-1-删除索引" class="headerlink" title="4.1.删除索引"></a>4.1.删除索引</h5><p>将创建的索引删除：</p>
-<pre><code>DELETE /customer?pretty
-</code></pre><h5 id="4-2-删除文档"><a href="#4-2-删除文档" class="headerlink" title="4.2.删除文档"></a>4.2.删除文档</h5><p>删除文档相当简单。这个例子展示了如何删除customer索引下对应ID为2的文档:</p>
-<pre><code>DELETE /customer/_doc/2?pretty
-</code></pre><h3 id="三-批量处理"><a href="#三-批量处理" class="headerlink" title="三.批量处理"></a>三.批量处理</h3><p>除了能够索引、更新和删除单个文档之外，Elasticsearch还可以使用<code>_bulk</code> API批量执行上述任何操作。它提供了一种非常有效的机制，可以在尽可能少的网络往返的情况下尽可能快地执行多个操作，提高执行效率。</p>
-<p>下面的示例就是在一个批量操作中索引两个文档：</p>
-<pre><code>POST /customer/doc/_bulk?pretty
-{&quot;index&quot;:{&quot;_id&quot;:&quot;1&quot;}}
-{&quot;name&quot;: &quot;John Doe&quot; }
-{&quot;index&quot;:{&quot;_id&quot;:&quot;2&quot;}}
-{&quot;name&quot;: &quot;Jane Doe&quot; }
-</code></pre><p>这个批量操作更新第一个文档(ID为1)，然后删除第二个文档(ID为2)：</p>
-<pre><code>POST /customer/_doc/_bulk?pretty
-{&quot;update&quot;:{&quot;_id&quot;:&quot;1&quot;}}
-{&quot;doc&quot;: { &quot;name&quot;: &quot;John Doe becomes Jane Doe&quot; } }
-{&quot;delete&quot;:{&quot;_id&quot;:&quot;2&quot;}}
-</code></pre><p>响应如下：</p>
-<pre><code>{
-    &quot;took&quot;: 48,
-    &quot;errors&quot;: false,
-    &quot;items&quot;: [
-    {
-        -&quot;update&quot;: {
-        &quot;_index&quot;: &quot;customer&quot;,
-        &quot;_type&quot;: &quot;doc&quot;,
-        &quot;_id&quot;: &quot;1&quot;,
-        &quot;_version&quot;: 3,
-        &quot;result&quot;: &quot;updated&quot;,
-        &quot;_shards&quot;: {
-            &quot;total&quot;: 2,
-            &quot;successful&quot;: 1,
-            &quot;failed&quot;: 0
-            },
-        &quot;status&quot;: 200
+</code></pre><p>由以上两例可以看出<code>match</code>查询条件是<strong>或</strong>的关系，而<code>match_phrase</code>查询条件是<strong>与</strong>的关系</p>
+<h4 id="4-bool查询语句"><a href="#4-bool查询语句" class="headerlink" title="4.bool查询语句"></a>4.bool查询语句</h4><p><strong>bool查询允许我们使用布尔逻辑将较小的查询组合成较大的查询</strong></p>
+<p>以下例子包含两个匹配查询，并返回地址中包含“mill”<strong>和</strong>“lane”的所有帐户:</p>
+<pre><code>GET /bank/_search
+{
+      &quot;query&quot;: {
+    &quot;bool&quot;: {
+          &quot;must&quot;: [
+            { &quot;match&quot;: { &quot;address&quot;: &quot;mill&quot; } },
+            { &quot;match&quot;: { &quot;address&quot;: &quot;lane&quot; } }
+           ]
         }
-    }
-    ]
+     }
 }
-</code></pre><p>值得注意的是，<strong>批量操作不会因为其中的一个操作失败所有的都失败</strong>。当bulk API返回时，它将为每个操作提供状态(按照发送的顺序)，以便检查某个特定操作是否失败。</p>
+</code></pre><p>与此相反，这个示例包含两个匹配查询，并返回地址中包含“mill”<strong>或</strong>“lane”的所有帐户：</p>
+<pre><code>GET /bank/_search
+{
+      &quot;query&quot;: {
+    &quot;bool&quot;: {
+          &quot;should&quot;: [
+                { &quot;match&quot;: { &quot;address&quot;: &quot;mill&quot; } },
+             { &quot;match&quot;: { &quot;address&quot;: &quot;lane&quot; } }
+          ]
+     }
+      }
+}
+</code></pre><p>这个示例包含两个匹配查询，并返回地址中既不包含“mill”也不包含“lane”的所有帐户：</p>
+<pre><code>GET /bank/_search
+{
+      &quot;query&quot;: {
+    &quot;bool&quot;: {
+          &quot;must_not&quot;: [
+            { &quot;match&quot;: { &quot;address&quot;: &quot;mill&quot; } },
+            { &quot;match&quot;: { &quot;address&quot;: &quot;lane&quot; } }
+          ]
+        }
+      }
+}
+</code></pre><p>这个示例返回所有40岁但不生活在ID(阿霍)中的人的帐户：</p>
+<pre><code>GET /bank/_search
+{
+      &quot;query&quot;: {
+    &quot;bool&quot;: {
+      &quot;must&quot;: [
+        { &quot;match&quot;: { &quot;age&quot;: &quot;40&quot; } }
+      ],
+      &quot;must_not&quot;: [
+            { &quot;match&quot;: { &quot;state&quot;: &quot;ID&quot; } }
+          ]
+    }
+     }
+}
+</code></pre><h3 id="三-过滤器"><a href="#三-过滤器" class="headerlink" title="三.过滤器"></a>三.过滤器</h3><p>在上一节中，我们跳过了一个名为document score(搜索结果中的_score字段)的小细节。分数是一个数值，它是文档与我们指定的搜索查询匹配程度的相对度量。分数越高，文档越相关，分数越低，文档越不相关。</p>
+<p>但是查询并不总是需要产生scores，特别是当它们仅用于“过滤”文档集时。Elasticsearch检测到这些情况并自动优化查询执行，以便不计算无用的分数。</p>
+<p>我们在前一节中介绍的bool查询还支持filter子句，该子句允许使用查询来限制其他子句匹配的文档，而不改变计算分数的方式。作为一个例子，让我们引入range查询，它允许我们通过一系列值筛选文档。这通常用于数字或日期过滤。</p>
+<p>以下示例使用bool查询返回所有余额在20000到30000之间的帐户(包括在内)。换句话说，我们希望找到的账户余额大于等于20000，小于等于30000：</p>
+<pre><code>GET /bank/_search
+{
+      &quot;query&quot;: {
+        &quot;bool&quot;: {
+              &quot;must&quot;: { &quot;match_all&quot;: {} },
+              &quot;filter&quot;: {
+                &quot;range&quot;: {
+                      &quot;balance&quot;: {
+                        &quot;gte&quot;: 20000,
+                        &quot;lte&quot;: 30000
+                          }
+                      }
+                      }
+                   }
+             }
+}
+</code></pre><h3 id="四-聚合"><a href="#四-聚合" class="headerlink" title="四.聚合"></a>四.聚合</h3><p>聚合提供了从数据中分组和提取统计信息的能力。考虑聚合最简单的方法是将其大致等同于SQL GROUP by和SQL聚合函数。在Elasticsearch中，您可以执行返回命中的搜索，同时在一个响应中返回与所有命中分离的聚合结果。这在某种意义上非常强大和高效，因为您可以运行查询和多个聚合，并一次性获得两个(或两个以上)操作的结果，从而减少网络资源调用的损耗。</p>
+<p>首先，这个示例按状态对所有帐户进行分组，然后返回按计数递减排序的前10个(默认):</p>
+<pre><code>GET /bank/_search
+{
+      &quot;size&quot;: 0,
+      &quot;aggs&quot;: {
+        &quot;group_by_state&quot;: {
+          &quot;terms&quot;: {
+            &quot;field&quot;: &quot;state&quot;
+           }
+         }
+      }
+}
+</code></pre><p>在SQL中，上述聚合的概念类似于:</p>
+<pre><code>SELECT state, COUNT(*) FROM bank GROUP BY state ORDER BY COUNT(*) DESC LIMIT 10;
+</code></pre><p>响应(部分显示):</p>
+<pre><code>{
+     &quot;took&quot;: 29,
+     &quot;timed_out&quot;: false,
+     &quot;_shards&quot;: {
+       &quot;total&quot;: 5,
+       &quot;successful&quot;: 5,
+       &quot;skipped&quot; : 0,
+       &quot;failed&quot;: 0
+     },
+     &quot;hits&quot; : {
+       &quot;total&quot; : 1000,
+       &quot;max_score&quot; : 0.0,
+       &quot;hits&quot; : [ ]
+    },
+     &quot;aggregations&quot; : {
+       &quot;group_by_state&quot; : {
+         &quot;doc_count_error_upper_bound&quot;: 20,
+         &quot;sum_other_doc_count&quot;: 770,
+         &quot;buckets&quot; : [ {
+           &quot;key&quot; : &quot;ID&quot;,
+           &quot;doc_count&quot; : 27
+         }, {
+           &quot;key&quot; : &quot;TX&quot;,
+           &quot;doc_count&quot; : 27
+         }, {
+           &quot;key&quot; : &quot;AL&quot;,
+           &quot;doc_count&quot; : 25
+        }, {
+           &quot;key&quot; : &quot;MD&quot;,
+           &quot;doc_count&quot; : 25
+         }, {
+           &quot;key&quot; : &quot;TN&quot;,
+           &quot;doc_count&quot; : 23
+         }, {
+           &quot;key&quot; : &quot;MA&quot;,
+           &quot;doc_count&quot; : 21
+           }, {
+           &quot;key&quot; : &quot;NC&quot;,
+              &quot;doc_count&quot; : 21
+           }, {
+           &quot;key&quot; : &quot;ND&quot;,
+           &quot;doc_count&quot; : 21
+         }, {
+           &quot;key&quot; : &quot;ME&quot;,
+           &quot;doc_count&quot; : 20
+         }, {
+           &quot;key&quot; : &quot;MO&quot;,
+           &quot;doc_count&quot; : 20
+         } ]
+       }
+   }
+  }
+</code></pre><p>我们可以看到ID(爱达荷州)有27个账户，TX(德克萨斯州)有27个账户，AL(阿拉巴马州)有25个账户，等等。</p>
+<p>注意，我们将<code>size=0</code>设置为不显示搜索结果，因为我们只想看到响应中的聚合结果。</p>
+<p>注意我们如何将average_balance聚合嵌套到group_by_state聚合中。这是所有聚合的常见模式。</p>
+<p>在前面的聚合的基础上，现在让我们按降序对平均余额进行排序:</p>
+<pre><code>GET /bank/_search
+{
+      &quot;size&quot;: 0,
+      &quot;aggs&quot;: {
+        &quot;group_by_state&quot;: {
+         &quot;terms&quot;: {
+            &quot;field&quot;: &quot;state&quot;,
+            &quot;order&quot;: {
+                  &quot;average_balance&quot;: &quot;desc&quot;
+                }
+          },
+        &quot;aggs&quot;: {
+       &quot;average_balance&quot;: {
+           &quot;avg&quot;: {
+            &quot;field&quot;: &quot;balance&quot;
+              }
+           }
+         }
+       }
+  }
+}
+</code></pre><p>这个例子展示了我们如何根据年龄等级(20-29岁，30-39岁，40-49岁)来分组，然后根据性别，最后得到平均账户余额，每个年龄等级，每个性别:</p>
+<pre><code>GET /bank/_search
+{
+      &quot;size&quot;: 0,
+      &quot;aggs&quot;: {
+        &quot;group_by_age&quot;: {
+          &quot;range&quot;: {
+            &quot;field&quot;: &quot;age&quot;,
+            &quot;ranges&quot;: [
+              {
+                &quot;from&quot;: 20,
+                &quot;to&quot;: 30
+              },
+             {
+                &quot;from&quot;: 30,
+                &quot;to&quot;: 40
+              },
+              {
+                &quot;from&quot;: 40,
+                &quot;to&quot;: 50
+              }
+         ]
+          },
+          &quot;aggs&quot;: {
+           &quot;group_by_gender&quot;: {
+          &quot;terms&quot;: {
+            &quot;field&quot;: &quot;gender&quot;
+          },
+          &quot;aggs&quot;: {
+            &quot;average_balance&quot;: {
+              &quot;avg&quot;: {
+                &quot;field&quot;: &quot;balance&quot;
+                }
+           }
+        }
+      }
+    }
+   }
+  }
+}
+</code></pre><p>还有很多其他的聚合功能我们在这里不会详细介绍。如果您想做进一步的实验，<a href="https://www.elastic.co/guide/en/elasticsearch/reference/6.4/search-aggregations.html" title="聚合参考指南" target="_blank" rel="noopener">聚合参考指南</a>是一个很好的起点。</p>
+<h3 id="五-总结"><a href="#五-总结" class="headerlink" title="五.总结"></a>五.总结</h3><p>Elasticsearch是一个简单的和复杂的产品。到目前为止，我们已经了解了它是什么，如何查看它的内部，以及如何使用一些REST api使用它。希望本教程能让您更好地理解Elasticsearch是什么，更重要的是，它激发了您对其其他强大功能的进一步试验!</p>
 
             </div>
             <hr/>
@@ -573,7 +754,7 @@ GET /_cat/indices?v
                     <span class="reprint-tip">转载请注明: </span>
                     <a href="http://www.b618.club" class="b-link-green">个人博客-孙建</a>
                     <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
-                    <a href="/2018/11/01/Elasticsearch入门三：Elasticsearch基本用法-增删改查/" class="b-link-green">Elasticsearch入门三：Elasticsearch基本用法-增删改查（译）</a>
+                    <a href="/2018/11/01/Elasticsearch入门四：Elasticsearch-搜索、过滤、聚合/" class="b-link-green">Elasticsearch入门四：Elasticsearch-搜索、过滤、聚合(译)</a>
                 </p>
             </div>
         </div>
@@ -592,8 +773,8 @@ GET /_cat/indices?v
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge left-badge text-color">上一篇</div>
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">本篇</div>
             <div class="card">
                 <a href="/2018/11/01/Elasticsearch入门四：Elasticsearch-搜索、过滤、聚合/">
                     <div class="card-image">
@@ -609,9 +790,9 @@ GET /_cat/indices?v
 https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_data.html
 一.搜索 API搜索的REST API可以从_s</div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="fa fa-clock-o fa-fw icon-date"></i>2018-11-01
-                        </span>
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2018-11-01
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fa fa-user fa-fw"></i>
@@ -620,6 +801,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -636,23 +818,22 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_
         <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge right-badge text-color">下一篇</div>
             <div class="card">
-                <a href="/2018/10/31/jdk8+tomcat8+mysql5.7+nginx搭建指南/">
+                <a href="/2018/11/01/Elasticsearch入门三：Elasticsearch基本用法-增删改查/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="jdk8+tomcat8+mysql5.7+nginx搭建指南">
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="Elasticsearch入门三：Elasticsearch基本用法-增删改查（译）">
                         
-                        <span class="card-title">jdk8+tomcat8+mysql5.7+nginx搭建指南</span>
+                        <span class="card-title">Elasticsearch入门三：Elasticsearch基本用法-增删改查（译）</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">搭建过程中遇到一些问题，因此记录下来方便以后查看！
-问题记录：
-1.由于粗心没有查看Linux是32位还是64位，导致下载了错误版本的软件，从而遇到很多不兼容的问题，耽误了不少时间，以下是查看Linux位数的命令：
-getconf LONG</div>
+                    <div class="summary">原文地址：
+https://www.elastic.co/guide/en/elasticsearch/reference/current/_exploring_your_cluster.html
+之前我们已经将集群运行起来了，下一步是学习</div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2018-10-31
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2018-11-01
                             </span>
                         <span class="publish-author">
                             
@@ -665,8 +846,8 @@ getconf LONG</div>
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/linux服务器/" target="_blank">
-                        <span class="chip bg-color">linux服务器</span>
+                    <a href="/tags/Elasticsearch/" target="_blank">
+                        <span class="chip bg-color">Elasticsearch</span>
                     </a>
                     
                 </div>
